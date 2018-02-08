@@ -37,7 +37,7 @@ public class Searcher {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		int hitsPerPage = 0;
+		int hitsPerPage = 20;
 		IndexReader reader = DirectoryReader.open(d);
 		IndexSearcher searcher = new IndexSearcher(reader);
 		TopDocs docs = searcher.search(q,hitsPerPage);
