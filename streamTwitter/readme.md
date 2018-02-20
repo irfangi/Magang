@@ -149,7 +149,7 @@ public class StreamTwitter {
         twitterStream.filter(qry);
     }
     public static void sendKafka(String pesan){ // method sendKafka dengan parameter String
-        String BOOTSTRAP_SERVERS = "localhost:9092"; // di isi localhost karena menggunakan lokal server
+        String BOOTSTRAP_SERVERS = "localhost:9092"; // di isi localhost karena menggunakan lokal kafka server
         String topic = "mytopic"; // topik pada kafka server di atas
 
         Properties props = new Properties();
@@ -220,7 +220,8 @@ public class ConsumeSpark implements Serializable {
                 ConsumerStrategies.<String, String>Subscribe(topics, kafkaParams));
 
         stream.mapToPair(record -> new Tuple2<>(record.key(), record.value()));
-
+	
+	//method call untuk membuat method  mengembalikan nilai json
         JavaDStream<String> lines = stream.map(new Function<ConsumerRecord<String, String>, String>() {
 
             @Override
@@ -229,12 +230,15 @@ public class ConsumeSpark implements Serializable {
             }
         });
 
+		// perulangan untuk java rdd
 		lines.foreachRDD(new VoidFunction<JavaRDD<String>>() {
 			@Override
 			public void call(JavaRDD<String> arg0) throws Exception {
 
 				try {
+				//memanggil method setInit dari objek HS
 				    HS.setInit();
+				    	//memanggil method insertHbase dari objek HS dengan parameter javardd
 					HS.insertHbase(arg0);
 
 				} catch (Exception e) {
@@ -242,6 +246,7 @@ public class ConsumeSpark implements Serializable {
 			}
 		});
 
+	// start
         lines.print(1);
         streamingContext.start();
         streamingContext.awaitTermination();
@@ -269,26 +274,28 @@ import java.io.Serializable;
 
 public class SaveToHbase implements Serializable {
     private transient Job newAPIJobConfiguration;
-    final static String HMASTER = "localhost:16000";
-    final static String ZOOKEEPER = "127.0.0.1";
+    final static String HMASTER = "localhost:16000"; // sesuaikan dengan HMASTER server dan port kalian
+    final static String ZOOKEEPER = "127.0.0.1";  // ip zookeeper
 
+	// method untuk konfigurasi
     public SaveToHbase setInit() throws IOException {
         Configuration config =  HBaseConfiguration.create();
         config.set("hbase.master", HMASTER);
 //		config.set("zookeeper.znode.parent", "/hbase-unsecure");
         config.setInt("timeout", 5000);
         config.set("hbase.zookeeper.quorum", ZOOKEEPER);
-        config.set(TableOutputFormat.OUTPUT_TABLE, "twitter");
+        config.set(TableOutputFormat.OUTPUT_TABLE, "twitter"); // disini menggunakan tabel hbase dengan nama "twitter"
 
         Job newAPIJobConfiguration1 = Job.getInstance(config);
-        newAPIJobConfiguration1.getConfiguration().set(TableOutputFormat.OUTPUT_TABLE, "twitter");
+        newAPIJobConfiguration1.getConfiguration().set(TableOutputFormat.OUTPUT_TABLE, "twitter"); // tabel "twitter"
         newAPIJobConfiguration1.setOutputFormatClass(TableOutputFormat.class);
         this.newAPIJobConfiguration = newAPIJobConfiguration1;
         return this;
     }
 
     public void insertHbase(JavaRDD<String> saveHb) throws IOException {
-        System.out.println("ini data ==> "+saveHb.collect());
+        System.out.println("ini data ==> "+saveHb.collect()); // menggunakan collect untuk menampilkan nilai parameternya "JSON"
+	// mapping untuk inputan ke database
         JavaPairRDD<ImmutableBytesWritable, Put> putData = saveHb
                 .mapToPair(new PairFunction<String, ImmutableBytesWritable, Put>() {
                     public Tuple2<ImmutableBytesWritable, Put> call(String value) throws Exception {
