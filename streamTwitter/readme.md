@@ -98,11 +98,13 @@ import java.util.Properties;
 
 public class StreamTwitter {
     public static void main(String[] args){
+    	// key di dapatkan dari https://apps.twitter.com melalui login twitter kalian masing masing
         final String consumerKey="Oqb9bywHRcbjinLZPCDIB4lX2";
         final String consumerSecret="7fFYDQKAWGOuNI79nGrNNtI0qrRYLbyt6cEdJVlcWNWgmUUC2F";
         final String consumerToken="1297424004-4Jm7sXUJ9IYJg39O8jrtmmaERfuicyrAQXa6Kmd";
         final String consumerTokenSecret="iVfN1gnD2HgXmqajulZYXkgLBGYQ34I9TLh9AE5Z7EnIC";
-
+	
+	// keyword yang kalian gunakan untuk mencari tweet
         String[] keyWords = {"jokowi","joko widodo","presiden"};
 
         FilterQuery qry = new FilterQuery();
@@ -116,10 +118,11 @@ public class StreamTwitter {
 
         StatusListener statusListener = null;
         twitterStream.addListener(new StatusListener() {
+		// method yang akan di jalankan ketika mendapatkan status baru atau tweet baru
             public void onStatus(Status status) {
-                JSONObject message = new JSONObject(status);
-                sendKafka(""+message);
-                System.out.println(".");
+                JSONObject message = new JSONObject(status);  // mengubah status menjadi JSONObject
+                sendKafka(""+message); // memanggil method send kafka
+                System.out.println("."); // tampil titik ketika sukses
                 //System.out.println(message);
             }
 
@@ -145,9 +148,9 @@ public class StreamTwitter {
         });
         twitterStream.filter(qry);
     }
-    public static void sendKafka(String pesan){
-        String BOOTSTRAP_SERVERS = "localhost:9092";
-        String topic = "mytopic";
+    public static void sendKafka(String pesan){ // method sendKafka dengan parameter String
+        String BOOTSTRAP_SERVERS = "localhost:9092"; // di isi localhost karena menggunakan lokal server
+        String topic = "mytopic"; // topik pada kafka server di atas
 
         Properties props = new Properties();
         props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, BOOTSTRAP_SERVERS);
@@ -157,7 +160,7 @@ public class StreamTwitter {
 
         Producer<String, String> producer = new KafkaProducer<String, String>(props);
         try {
-            producer.send(new ProducerRecord<String, String>(topic, pesan));
+            producer.send(new ProducerRecord<String, String>(topic, pesan)); // memasukkan ke kafka
             producer.close();
 
         } catch (Exception e) {
@@ -192,10 +195,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class ConsumeSpark implements Serializable {
-    private static SaveToHbase HS = new SaveToHbase();
+    private static SaveToHbase HS = new SaveToHbase(); // objek untuk service hbase
     public static void main(String[] args) throws InterruptedException {
 //		SparkConf conf = new SparkConf();
-        SparkConf conf = new SparkConf().setMaster("local[2]").setAppName("SteramKafka");
+        SparkConf conf = new SparkConf().setMaster("local[2]").setAppName("SteramKafka"); // stream pada local 2
         JavaStreamingContext streamingContext = new JavaStreamingContext(conf, new Duration(1000));
 
         Logger rootLogger = Logger.getRootLogger();
@@ -203,14 +206,14 @@ public class ConsumeSpark implements Serializable {
 
         Map<String, Object> kafkaParams = new HashMap<>();
 
-        kafkaParams.put("bootstrap.servers", "l=localhost:9092");
+        kafkaParams.put("bootstrap.servers", "l=localhost:9092"); // kafka server
         kafkaParams.put("key.deserializer", StringDeserializer.class);
         kafkaParams.put("value.deserializer", StringDeserializer.class);
         kafkaParams.put("group.id", "tester");
         kafkaParams.put("auto.offset.reset", "latest");
         kafkaParams.put("enable.auto.commit", false);
 
-        Collection<String> topics = Arrays.asList("mytopic");
+        Collection<String> topics = Arrays.asList("mytopic"); // topik yang digunakan
 
         JavaInputDStream<ConsumerRecord<String, String>> stream = KafkaUtils.createDirectStream(streamingContext,
                 LocationStrategies.PreferConsistent(),
