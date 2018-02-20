@@ -254,7 +254,7 @@ public class ConsumeSpark implements Serializable {
 }
 
 ```
-### d. Buat Class untuk Servicehbase (SaveToHbase.java)
+### d. buat Class untuk Servicehbase (SaveToHbase.java)
 ```
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.hbase.HBaseConfiguration;
@@ -323,3 +323,6 @@ public class SaveToHbase implements Serializable {
     }
 }
 ```
+# NB
+#### Pada saat streaming kafka harus sudah diaktifkan, pada saat hbase di start hadoop kafka zookeeper harus sudah diaktifkan, tabel configurasi hbase service disesuikan dengan tabel kalian. 
+
