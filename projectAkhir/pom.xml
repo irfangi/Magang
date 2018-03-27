@@ -1,0 +1,67 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <groupId>magang</groupId>
+  <artifactId>projectAkhir</artifactId>
+  <version>0.0.1-SNAPSHOT</version>
+  <packaging>jar</packaging>
+
+  <name>projectAkhir</name>
+  <url>http://maven.apache.org</url>
+
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+  </properties>
+
+  <dependencies>
+  	<dependency>
+	    <groupId>org.twitter4j</groupId>
+	    <artifactId>twitter4j-stream</artifactId>
+	    <version>4.0.6</version>
+	</dependency>
+	<dependency>
+		<groupId>org.apache.httpcomponents</groupId>
+		<artifactId>httpclient</artifactId>
+		<version>4.5</version>
+	</dependency>
+	<dependency>
+		<groupId>org.jsoup</groupId>
+		<artifactId>jsoup</artifactId>
+		<version>1.8.1</version>
+	</dependency>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>3.8.1</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+         <groupId>org.apache.spark</groupId>
+         <artifactId>spark-streaming_2.11</artifactId>
+         <version>2.2.0</version>
+     </dependency>
+     <dependency>
+         <groupId>org.apache.spark</groupId>
+         <artifactId>spark-core_2.11</artifactId>
+         <version>2.2.0</version>
+     </dependency>
+     <dependency>
+         <groupId>org.apache.spark</groupId>
+         <artifactId>spark-streaming-kafka-0-10_2.11</artifactId>
+         <version>2.2.0</version>
+     </dependency>
+
+     <dependency>
+         <groupId>org.apache.hbase</groupId>
+         <artifactId>hbase-client</artifactId>
+         <version>1.2.0</version>
+     </dependency>
+
+     <dependency>
+         <groupId>org.apache.hbase</groupId>
+         <artifactId>hbase-server</artifactId>
+         <version>1.2.0</version>
+     </dependency>
+  </dependencies>
+</project>
